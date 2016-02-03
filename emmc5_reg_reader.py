@@ -30,14 +30,6 @@ path_ecsd_map = "./map/ecsd.csv"
 path_result = "./result/"
 
 # Get device specific information
-#vendor = raw_input("Please enter the eMMC vendor: ")
-#capacity = raw_input("Please enter the eMMC capacity: ")
-
-# Wait for devices
-print "Wait for device..."
-#os.popen('adb wait-for-device')
-#dsn = os.popen('adb devices').readlines()[1].split('\t')[0]
-#print "Device " + dsn + " detected"
 
 val = raw_input()
 
@@ -47,10 +39,10 @@ f_csd_map = open(path_csd_map, 'r')
 f_ecsd_map = open(path_ecsd_map, 'r')
 
 # Create result file
-if not os.path.exists(path_result):
-    os.popen("mkdir " + path_result)
-f_result = open(path_result + "vendor" + "_" + "cap" + ".csv", 'wb')
-result_writer = csv.writer(f_result)
+#if not os.path.exists(path_result):
+#    os.popen("mkdir " + path_result)
+#f_result = open(path_result + "vendor" + "_" + "cap" + ".csv", 'wb')
+#result_writer = csv.writer(f_result)
 
 
 if opts.target == 1:
@@ -58,7 +50,7 @@ if opts.target == 1:
     print "Parsing CID value..."
     pos_cur = 0
     val_cid_bin = format(int(val, 16), '0128b')
-    result_writer.writerow(('', '', 'CID'))
+    #result_writer.writerow(('', '', 'CID'))
     for line in f_cid_map:
         tokens = line[:-1].split(",")
         try:
@@ -69,15 +61,16 @@ if opts.target == 1:
             pos_cur = pos_cur + size_cur
         except ValueError:
             value_cur = ""    
-        result_writer.writerow((tokens[0], tokens[1], tokens[2], tokens[3], value_cur))
+#        result_writer.writerow((tokens[0], tokens[1], tokens[2], tokens[3], value_cur))
+        print tokens[0], tokens[1], tokens[2], tokens[3], ": ", value_cur
 
 if opts.target == 2:
     # Parse CSD. Basic unit is bit, MSB first
     print "Parsing CSD value..."
     pos_cur = 0
     val_csd_bin = format(int(val, 16), '0128b')
-    result_writer.writerows(('', ''))
-    result_writer.writerow(('', '', 'CSD'))
+    #result_writer.writerows(('', ''))
+    #result_writer.writerow(('', '', 'CSD'))
     for line in f_csd_map:
         tokens = line[:-1].split(",")
         try:
@@ -88,15 +81,16 @@ if opts.target == 2:
             pos_cur = pos_cur + size_cur
         except ValueError:
             value_cur = ""
-        result_writer.writerow((tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], value_cur))
+#        result_writer.writerow((tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], value_cur))
+        print tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], ": ", value_cur
 
 
 if opts.target == 3:
     # Parse ext-CSD. Basic unit is byte. LSB first
     print "Parsing ext-CSD value..."
     pos_cur = ecsd_bytes*2
-    result_writer.writerows(('', ''))
-    result_writer.writerow(('', '', 'EXT-CSD'))
+    #result_writer.writerows(('', ''))
+    #result_writer.writerow(('', '', 'EXT-CSD'))
     for line in f_ecsd_map:
         tokens = line[:-1].split(",")
         # One line started with "Modes Segment" does not have this field
@@ -109,12 +103,13 @@ if opts.target == 3:
         except ValueError:
             value_cur = ""
         # Peel off the right number of bytes
-        result_writer.writerow((tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], value_cur))
+#        result_writer.writerow((tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], value_cur))
+        print tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], ": ", value_cur
 
 
 # Close all the files at last
 f_cid_map.close()
 f_csd_map.close()
 f_ecsd_map.close()
-f_result.close()
+#f_result.close()
 print "Done!"

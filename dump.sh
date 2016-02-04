@@ -1,11 +1,31 @@
 #!/bin/bash
 
+MMC_HOST_NAME=mmc0
+SYS_CLASS_PATH=`ls  -d /sys/class/mmc_host/${MMC_HOST_NAME}/mmc*`
+MMC_CARD_NAME=`basename $SYS_CLASS_PATH`
+DEBUG_PATH="/sys/kernel/debug/${MMC_HOST_NAME}/${MMC_CARD_NAME}"
+
 echo -e "CID:"
-cat /sys/class/mmc_host/mmc0/mmc0\:0001/cid | ./emmc5_reg_reader.py -i
+if [ -e "${SYS_CLASS_PATH}/cid" ]
+then
+	cat "${SYS_CLASS_PATH}/cid" | ./emmc5_reg_reader.py -i
+else
+	echo "No CID found"
+fi
 
 echo -e "\nCSD:"
-cat /sys/class/mmc_host/mmc0/mmc0\:0001/csd | ./emmc5_reg_reader.py -s
+if [ -e "${SYS_CLASS_PATH}/csd" ]
+then
+	cat "${SYS_CLASS_PATH}/csd" | ./emmc5_reg_reader.py -s
+else
+	echo "No CSD found"
+fi
 
 echo -e "\nEXT_CSD:"
-cat /sys/kernel/debug/mmc0/mmc0\:0001/ext_csd | ./emmc5_reg_reader.py -e
+if [ -e "${DEBUG_PATH}/ext_csd" ]
+then
+	cat "${DEBUG_PATH}/ext_csd" | ./emmc5_reg_reader.py -e
+else
+	echo "No EXT CSD found"
+fi
 
